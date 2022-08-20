@@ -10,41 +10,47 @@ public class tgBot extends TelegramLongPollingBot {
         String command = update.getMessage().getText();
         String firstName = update.getMessage().getFrom().getFirstName();
 
-        if (command.equals("/start")){
-            String message = "Let's start!";
-            SendMessage response = new SendMessage();
-            response.setChatId(update.getMessage().getChatId().toString());
-            response.setText(message);
+        switch (command) {
+            case "/start" -> {
+                String message = "Let's start!";
+                SendMessage response = new SendMessage();
+                response.setChatId(update.getMessage().getChatId().toString());
+                response.setText(message);
 
-            try{
-                execute(response);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        } else if (command.equals("/run")){
-           String message = "Hi, " + firstName + ", bot is successfully launched!";
-            SendMessage response = new SendMessage();
-            response.setChatId(update.getMessage().getChatId().toString());
-            response.setText(message);
-
-            try{
-                execute(response);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        } else {
-            String message = "I have only one command yet, please wait for updates";
-            SendMessage response = new SendMessage();
-            response.setChatId(update.getMessage().getChatId().toString());
-            response.setText(message);
-
-            try{
-                execute(response);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
+                try {
+                    execute(response);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
             }
 
+            case "/run" -> {
+                String message = "Hi, " + firstName + ", bot is successfully launched!";
+                SendMessage response = new SendMessage();
+                response.setChatId(update.getMessage().getChatId().toString());
+                response.setText(message);
+
+                try {
+                    execute(response);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            default -> {
+                String message = "I have only one command yet, please wait for updates";
+                SendMessage response = new SendMessage();
+                response.setChatId(update.getMessage().getChatId().toString());
+                response.setText(message);
+
+                try {
+                    execute(response);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+
     }
 
 
