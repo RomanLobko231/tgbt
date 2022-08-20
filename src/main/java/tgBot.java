@@ -11,7 +11,7 @@ public class tgBot extends TelegramLongPollingBot {
         String firstName = update.getMessage().getFrom().getFirstName();
 
         if (command.equals("/start")){
-            String message = "Let's start!!!";
+            String message = "Let's start!";
             SendMessage response = new SendMessage();
             response.setChatId(update.getMessage().getChatId().toString());
             response.setText(message);
