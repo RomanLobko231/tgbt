@@ -1,11 +1,14 @@
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 import java.util.ArrayList;
+
+
 
 public class TgBot extends TelegramLongPollingBot {
 
@@ -16,13 +19,26 @@ public class TgBot extends TelegramLongPollingBot {
         String message = update.getMessage().getText();
         sendMsg(update.getMessage().getChatId().toString(), message, update);
 
-        firstKeyboard(chatId, message);
+        if (message.equals("Main Page")||(message.equals("/start"))||message.equals("Shop's Info")){
+            if (message.equals("Main Page")){
+                message = "/start";
+            } else if (message.equals("Shop's Info")) {
+                message = "Shop's Info";
+            }
+            firstKeyboard(chatId, message);
+        } else {
+            keyboard(chatId, message);
+        }
 
-        if (message.equals("Forward")||message.equals("Back")){
+        /*if (message.equals("Forward")||message.equals("Back")){
              keyboard(chatId, message);
-         }
+         }*/
+
+
+        sendPhoto(chatId, message);
 
     }
+
 
 
     public synchronized void sendMsg(String chatId, String message, Update update){
@@ -42,6 +58,26 @@ public class TgBot extends TelegramLongPollingBot {
             }
         }
 
+    }
+
+    public synchronized void sendPhoto(String chatId, String message) {
+
+        SendPhoto photo = new SendPhoto();
+        photo.setChatId(chatId);
+        if (message.equals("1")) {
+            photo.setPhoto(new InputFile("https://imgur.com/a/dIc6rlc"));
+            photo.setCaption("Photo of an java logo");
+        } else if (message.equals("2")) {
+            photo.setPhoto(new InputFile("https://imgur.com/gallery/WaiBLIE"));
+            photo.setCaption("Photo of a house");
+        }
+
+
+        try {
+            execute(photo);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     public synchronized void firstKeyboard(String chatId, String msg){
@@ -96,19 +132,23 @@ public class TgBot extends TelegramLongPollingBot {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         ArrayList<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row1 = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
         row1.add("Back");
         row1.add(String.valueOf(pageCounter));
         row1.add("Forward");
+        row2.add("Main Page");
         keyboard.add(row1);
+        keyboard.add(row2);
+
 
         if (msg.equals("Forward")){
             pageCounter++;
             row1.set(1, String.valueOf(pageCounter));
-            System.out.println("123");
+            System.out.println("User moved a page forward");
         } else if (msg.equals("Back") && pageCounter > 1) {
             pageCounter--;
             row1.set(1, String.valueOf(pageCounter));
-            System.out.println("2345");
+            System.out.println("User moved a page back");
         }
 
 
