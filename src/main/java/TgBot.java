@@ -3,14 +3,17 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
-
+import java.util.List;
 
 
 public class TgBot extends TelegramLongPollingBot {
+
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -20,6 +23,7 @@ public class TgBot extends TelegramLongPollingBot {
         switch (message) {
             case "Main Page", "/start", "Shop's Info" -> firstKeyboard(chatId, message);
             case "Go Shopping", "Forward", "Back" -> keyboard(chatId, message);
+            case "In" -> inlineKeyboard(chatId);
         }
     }
 
@@ -103,7 +107,7 @@ public class TgBot extends TelegramLongPollingBot {
 
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        message.setText("Add to cart?");
+        message.setText("Product description...");
         message.setAllowSendingWithoutReply(true);
         message.setReplyMarkup(keyboardMarkup);
 
@@ -112,9 +116,32 @@ public class TgBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+        inlineKeyboard(chatId);
     }
 
+    public synchronized void inlineKeyboard(String chatId){
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText("Add to cart?");
 
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        List<InlineKeyboardButton> button1 = new ArrayList<>();
+        InlineKeyboardButton but = new InlineKeyboardButton();
+        but.setText("Add");
+        but.setCallbackData("Add to cart");
+        button1.add(but);
+        keyboard.add(button1);
+
+        inlineKeyboardMarkup.setKeyboard(keyboard);
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @Override
