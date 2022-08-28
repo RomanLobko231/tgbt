@@ -26,16 +26,11 @@ public class TgBot extends TelegramLongPollingBot {
                 message = "Shop's Info";
             }
             firstKeyboard(chatId, message);
-        } else {
+        } else if (message.equals("Go Shopping")||(message.equals("Forward")||(message.equals("Back")))){
             keyboard(chatId, message);
         }
 
-        /*if (message.equals("Forward")||message.equals("Back")){
-             keyboard(chatId, message);
-         }*/
 
-
-        sendPhoto(chatId, message);
 
     }
 
@@ -60,14 +55,14 @@ public class TgBot extends TelegramLongPollingBot {
 
     }
 
-    public synchronized void sendPhoto(String chatId, String message) {
+    public synchronized void sendPhoto(String chatId, long pageCounter) {
 
         SendPhoto photo = new SendPhoto();
         photo.setChatId(chatId);
-        if (message.equals("1")) {
+        if (pageCounter == 1) {
             photo.setPhoto(new InputFile("https://imgur.com/a/dIc6rlc"));
             photo.setCaption("Photo of an java logo");
-        } else if (message.equals("2")) {
+        } else if (pageCounter == 2) {
             photo.setPhoto(new InputFile("https://imgur.com/gallery/WaiBLIE"));
             photo.setCaption("Photo of a house");
         }
@@ -126,9 +121,6 @@ public class TgBot extends TelegramLongPollingBot {
 
     public synchronized void keyboard(String chatId, String msg){
 
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         ArrayList<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row1 = new KeyboardRow();
@@ -144,28 +136,28 @@ public class TgBot extends TelegramLongPollingBot {
         if (msg.equals("Forward")){
             pageCounter++;
             row1.set(1, String.valueOf(pageCounter));
-            System.out.println("User moved a page forward");
         } else if (msg.equals("Back") && pageCounter > 1) {
             pageCounter--;
             row1.set(1, String.valueOf(pageCounter));
-            System.out.println("User moved a page back");
         }
 
+        sendPhoto(chatId, pageCounter);
 
-        message.setText(String.valueOf(pageCounter));
-
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Add to cart?");
+        message.setAllowSendingWithoutReply(true);
+        message.setReplyMarkup(keyboardMarkup);
 
         keyboardMarkup.setResizeKeyboard(true);
         keyboardMarkup.setKeyboard(keyboard);
-        message.setReplyMarkup(keyboardMarkup);
+
 
         try {
             execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-
-
     }
 
 
