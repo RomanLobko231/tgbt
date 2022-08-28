@@ -12,47 +12,15 @@ import java.util.ArrayList;
 
 public class TgBot extends TelegramLongPollingBot {
 
-
     @Override
     public void onUpdateReceived(Update update) {
         String chatId = update.getMessage().getChatId().toString();
         String message = update.getMessage().getText();
-        sendMsg(update.getMessage().getChatId().toString(), message, update);
 
-        if (message.equals("Main Page")||(message.equals("/start"))||message.equals("Shop's Info")){
-            if (message.equals("Main Page")){
-                message = "/start";
-            } else if (message.equals("Shop's Info")) {
-                message = "Shop's Info";
-            }
-            firstKeyboard(chatId, message);
-        } else if (message.equals("Go Shopping")||(message.equals("Forward")||(message.equals("Back")))){
-            keyboard(chatId, message);
+        switch (message) {
+            case "Main Page", "/start", "Shop's Info" -> firstKeyboard(chatId, message);
+            case "Go Shopping", "Forward", "Back" -> keyboard(chatId, message);
         }
-
-
-
-    }
-
-
-
-    public synchronized void sendMsg(String chatId, String message, Update update){
-
-        if ("/run".equals(message)) {
-            String firstName = update.getMessage().getFrom().getFirstName();
-            SendMessage response = new SendMessage();
-            response.enableMarkdown(true);
-            response.setChatId(chatId);
-            response.setText("Hi, " + firstName + ", bot is successfully launched!");
-
-
-            try {
-                execute(response);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        }
-
     }
 
     public synchronized void sendPhoto(String chatId, long pageCounter) {
@@ -67,7 +35,6 @@ public class TgBot extends TelegramLongPollingBot {
             photo.setCaption("Photo of a house");
         }
 
-
         try {
             execute(photo);
         } catch (TelegramApiException e) {
@@ -76,8 +43,6 @@ public class TgBot extends TelegramLongPollingBot {
     }
 
     public synchronized void firstKeyboard(String chatId, String msg){
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
 
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         ArrayList<KeyboardRow> firstKeyboard = new ArrayList<>();
@@ -91,28 +56,20 @@ public class TgBot extends TelegramLongPollingBot {
         keyboardMarkup.setResizeKeyboard(true);
         keyboardMarkup.setKeyboard(firstKeyboard);
         keyboardMarkup.setOneTimeKeyboard(false);
+
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
         message.setReplyMarkup(keyboardMarkup);
 
-
         switch (msg) {
-            case "/start" -> {
-                message.setText("Welcome to our shop!");
-                try {
-                    execute(message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            }
-            case "Go Shopping" -> keyboard(chatId, msg);
+            case "/start", "Main Page" -> message.setText("Welcome to our shop!");
+            case "Shop's Info" -> message.setText("Info");
+        }
 
-            case "Shop's Info" -> {
-                message.setText("Info");
-                try {
-                    execute(message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            }
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
 
     }
@@ -131,7 +88,8 @@ public class TgBot extends TelegramLongPollingBot {
         row2.add("Main Page");
         keyboard.add(row1);
         keyboard.add(row2);
-
+        keyboardMarkup.setResizeKeyboard(true);
+        keyboardMarkup.setKeyboard(keyboard);
 
         if (msg.equals("Forward")){
             pageCounter++;
@@ -149,16 +107,14 @@ public class TgBot extends TelegramLongPollingBot {
         message.setAllowSendingWithoutReply(true);
         message.setReplyMarkup(keyboardMarkup);
 
-        keyboardMarkup.setResizeKeyboard(true);
-        keyboardMarkup.setKeyboard(keyboard);
-
-
         try {
             execute(message);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }
+
+
 
 
     @Override
