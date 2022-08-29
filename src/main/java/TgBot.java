@@ -20,10 +20,10 @@ public class TgBot extends TelegramLongPollingBot {
         String chatId = update.getMessage().getChatId().toString();
         String message = update.getMessage().getText();
 
+
         switch (message) {
             case "Main Page", "/start", "Shop's Info" -> firstKeyboard(chatId, message);
             case "Go Shopping", "Forward", "Back" -> keyboard(chatId, message);
-            case "In" -> inlineKeyboard(chatId);
         }
     }
 
@@ -33,10 +33,10 @@ public class TgBot extends TelegramLongPollingBot {
         photo.setChatId(chatId);
         if (pageCounter == 1) {
             photo.setPhoto(new InputFile("https://imgur.com/a/dIc6rlc"));
-            photo.setCaption("Photo of an java logo");
+            photo.setCaption("Photo of product 1");
         } else if (pageCounter == 2) {
             photo.setPhoto(new InputFile("https://imgur.com/gallery/WaiBLIE"));
-            photo.setCaption("Photo of a house");
+            photo.setCaption("Photo of product 2");
         }
 
         try {
